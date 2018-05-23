@@ -95,7 +95,7 @@ public class SearchRecipesActivity extends BaseActivity
         bundle.putString("url", url);
         webViewFragment.setArguments(bundle);
         FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
+        ft.setCustomAnimations(R.anim.enter_from_top, R.anim.exit_to_bottom, R.anim.enter_from_bottom, R.anim.exit_to_top);
         ft.replace(R.id.fragmentContainer, webViewFragment, TAG_RECIPE_WEB);
         ft.addToBackStack(null);
         ft.commitAllowingStateLoss();
