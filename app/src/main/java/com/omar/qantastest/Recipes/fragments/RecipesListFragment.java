@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,8 @@ import com.omar.qantastest.Common.network.domain.models.RecipeResponse;
 import com.omar.qantastest.Common.network.managers.RecipesManager;
 import com.omar.qantastest.Common.ui.BaseFragment;
 import com.omar.qantastest.R;
-import com.omar.qantastest.Recipes.adapters.RecipesListAdapter;
+import com.omar.qantastest.Recipes.adapters.OtherRecipesListAdapter;
+import com.omar.qantastest.Recipes.adapters.PopularRecipesListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +28,15 @@ import io.reactivex.observers.DisposableObserver;
 /**
  * Created by omz on 23/5/18
  */
-public class RecipesListFragment extends BaseFragment implements RecipesListAdapter.RecipesListListener {
+public class RecipesListFragment extends BaseFragment
+        implements PopularRecipesListAdapter.RecipesListListener, OtherRecipesListAdapter.OtherRecipesListListener {
 
     @BindView(R.id.recyclerViewPopularRecipes) protected RecyclerView recyclerViewPopularRecipes;
-    private RecipesListAdapter popularRecipesAdapter;
+    private PopularRecipesListAdapter popularRecipesAdapter;
     private List<Recipe> popularRecipesList;
 
     @BindView(R.id.recyclerViewOtherRecipes) protected RecyclerView recyclerViewOtherRecipes;
+    private OtherRecipesListAdapter otherRecipesListAdapter;
     private List<Recipe> otherRecipesList;
 
     private RecipesManager recipesManager;
@@ -56,9 +58,13 @@ public class RecipesListFragment extends BaseFragment implements RecipesListAdap
         recipesManager = new RecipesManager();
 
         popularRecipesList = new ArrayList<>();
-        popularRecipesAdapter = new RecipesListAdapter(getActivity(), popularRecipesList, this);
+        popularRecipesAdapter = new PopularRecipesListAdapter(getActivity(), popularRecipesList, this);
         recyclerViewPopularRecipes.setItemAnimator(new DefaultItemAnimator());
         recyclerViewPopularRecipes.setAdapter(popularRecipesAdapter);
+
+        otherRecipesList = new ArrayList<>();
+        otherRecipesListAdapter = new OtherRecipesListAdapter(getActivity(), otherRecipesList, this);
+        recyclerViewOtherRecipes.setAdapter(otherRecipesListAdapter);
 
         searchRecipes();
 
@@ -72,8 +78,10 @@ public class RecipesListFragment extends BaseFragment implements RecipesListAdap
         if (getActivity().getResources().getBoolean(R.bool.landscapeMode)) {
             spanCount = 3;
         }
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), spanCount);
-        recyclerViewPopularRecipes.setLayoutManager(mLayoutManager);
+        RecyclerView.LayoutManager mLayoutManagerPopular = new GridLayoutManager(getActivity(), spanCount);
+        recyclerViewPopularRecipes.setLayoutManager(mLayoutManagerPopular);
+        RecyclerView.LayoutManager mLayoutManagerOther = new GridLayoutManager(getActivity(), spanCount);
+        recyclerViewOtherRecipes.setLayoutManager(mLayoutManagerOther);
     }
 
     @Override
@@ -84,7 +92,7 @@ public class RecipesListFragment extends BaseFragment implements RecipesListAdap
         if (context instanceof RecipesListFragment.RecipesListFragmentListener) {
             listener = (RecipesListFragment.RecipesListFragmentListener) context;
         } else {
-            throw new RuntimeException(context.toString() + " must implement PropertiesListFragmentListener");
+            throw new RuntimeException(context.toString() + " must implement RecipesListFragmentListener");
         }
     }
 
@@ -121,12 +129,17 @@ public class RecipesListFragment extends BaseFragment implements RecipesListAdap
 
     private void updateLists() {
         popularRecipesList.clear();
+        otherRecipesList.clear();
+
         for (Recipe recipe : responseData.getResults()) {
             if (!recipe.getThumbnail().isEmpty()) {
                 popularRecipesList.add(recipe);
+            } else {
+                otherRecipesList.add(recipe);
             }
         }
         popularRecipesAdapter.notifyDataSetChanged();
+        otherRecipesListAdapter.notifyDataSetChanged();
     }
 
     @Override

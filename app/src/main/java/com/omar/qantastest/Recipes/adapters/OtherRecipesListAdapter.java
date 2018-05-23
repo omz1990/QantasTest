@@ -6,59 +6,44 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.omar.qantastest.Common.network.domain.models.Recipe;
 import com.omar.qantastest.R;
 
 import java.util.List;
 
 /**
- * Created by omz on 23/5/18
+ * Created by omz on 24/5/18
  */
-public class RecipesListAdapter  extends RecyclerView.Adapter<RecipesListAdapter.RecipeViewHolder> {
+public class OtherRecipesListAdapter extends RecyclerView.Adapter<OtherRecipesListAdapter.OtherRecipeViewHolder> {
 
     // The Recycler Adapter class for the properties list recycler view
     private Context mContext;
     private List<Recipe> recipesList;
-    private RecipesListListener listener;
+    private OtherRecipesListAdapter.OtherRecipesListListener listener;
 
-    public RecipesListAdapter(Context mContext, List<Recipe> recipesList, RecipesListListener listener) {
+    public OtherRecipesListAdapter(Context mContext, List<Recipe> recipesList, OtherRecipesListAdapter.OtherRecipesListListener listener) {
         this.mContext = mContext;
         this.recipesList = recipesList;
         this.listener = listener;
     }
 
     @Override
-    public RecipeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public OtherRecipesListAdapter.OtherRecipeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_recipe_popular, parent, false);
+                .inflate(R.layout.list_item_recipe_others, parent, false);
 
-        return new RecipeViewHolder(itemView);
+        return new OtherRecipesListAdapter.OtherRecipeViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(RecipeViewHolder holder, final int position) {
+    public void onBindViewHolder(OtherRecipesListAdapter.OtherRecipeViewHolder holder, final int position) {
         // Update data of all views
-        holder.recipeHeading.setText(recipesList.get(position).getTitle());
-
-        // Load images from received URLs
-        Glide.with(mContext)
-                .load(recipesList.get(position).getThumbnail())
-                .placeholder(R.drawable.ic_recipe_placeholder)
-                .into(holder.thumbnail);
+        holder.recipeHeading.setText(recipesList.get(position).getTitle().trim());
 
         // Listeners to notify the Fragment that an item has been clicked, and then send the property details to the fragment
         holder.cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onRecipeClick(recipesList.get(position));
-            }
-        });
-
-        holder.thumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 listener.onRecipeClick(recipesList.get(position));
@@ -71,21 +56,19 @@ public class RecipesListAdapter  extends RecyclerView.Adapter<RecipesListAdapter
         return recipesList.size();
     }
 
-    public class RecipeViewHolder extends RecyclerView.ViewHolder {
+    public class OtherRecipeViewHolder extends RecyclerView.ViewHolder {
         public CardView cardView;
         public TextView recipeHeading;
-        public ImageView thumbnail;
 
-        public RecipeViewHolder(View view) {
+        public OtherRecipeViewHolder(View view) {
             super(view);
             // Bind all the views to variables in the class
             cardView = (CardView) view.findViewById(R.id.cardView);
-            thumbnail = (ImageView) view.findViewById(R.id.thumbnail);
             recipeHeading = (TextView) view.findViewById(R.id.recipeHeading);
         }
     }
 
-    public interface RecipesListListener {
+    public interface OtherRecipesListListener {
         void onRecipeClick(Recipe recipe);
     }
 }
