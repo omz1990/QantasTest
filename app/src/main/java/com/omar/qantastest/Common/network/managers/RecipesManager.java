@@ -20,7 +20,7 @@ public class RecipesManager {
         searchRecipesService = ServiceFactory.createService(SearchRecipesService.class, ServerSettings.Domain.BASE_URL);
     }
 
-    public Observable<RecipeResponse> searchProperties() {
+    public Observable<RecipeResponse> searchRecipes() {
         return searchRecipesService.searchRecipes()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
