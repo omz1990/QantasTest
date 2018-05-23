@@ -1,7 +1,15 @@
 package com.omar.qantastest.Recipes.fragments;
 
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Spannable;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +19,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.omar.qantastest.Common.network.domain.models.Recipe;
 import com.omar.qantastest.Common.ui.BaseFragment;
+import com.omar.qantastest.Common.utils.AppClickableSpan;
 import com.omar.qantastest.R;
 
 import java.io.Serializable;
@@ -88,6 +97,7 @@ public class RecipeDetailsFragment extends BaseFragment {
             thumbnail.setVisibility(View.VISIBLE);
         }
         link.setText(recipeData.getHref());
+        initLinkSpan();
     }
 
     @Override
@@ -95,5 +105,37 @@ public class RecipeDetailsFragment extends BaseFragment {
         // Save currently loaded data into the bundle for reloading
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putSerializable("recipe", (Serializable) recipeData);
+    }
+
+    private void initLinkSpan() {
+        if (link != null) {
+            String fullText = link.getText().toString();
+            String linkText = recipeData.getHref();
+            Spannable span = Spannable.Factory.getInstance().newSpannable(fullText);
+            final int color = Color.parseColor("#0000ff");
+            AppClickableSpan termsOfServiceSpan = new AppClickableSpan(color) {
+                @Override
+                public void onClick(View v) {
+                    openWebView(recipeData.getHref());
+
+                }
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    ds.setUnderlineText(false);
+                    ds.setColor(color);
+                }
+            };
+            int linkIndex = fullText.indexOf(linkText);
+            span.setSpan(termsOfServiceSpan, linkIndex, linkIndex + linkText.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            // update view with span
+            link.setText(span);
+            link.setMovementMethod(LinkMovementMethod.getInstance());
+        }
+    }
+
+    private void openWebView(String url) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
 }

@@ -51,7 +51,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#000"
-                    android:text="ths ifj weofvjofiv jowfijv owifjv "
+                    android:text=""
                     android:layout_marginTop="6dp" />
             </LinearLayout>
 
