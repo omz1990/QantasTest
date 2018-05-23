@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class PopularRecipesListAdapter extends RecyclerView.Adapter<PopularRecipesListAdapter.RecipeViewHolder> {
 
-    // The Recycler Adapter class for the properties list recycler view
+    // The Recycler Adapter class for the recipes list recycler view
     private Context mContext;
     private List<Recipe> recipesList;
     private RecipesListListener listener;
@@ -50,7 +50,7 @@ public class PopularRecipesListAdapter extends RecyclerView.Adapter<PopularRecip
                 .placeholder(R.drawable.ic_recipe_placeholder)
                 .into(holder.thumbnail);
 
-        // Listeners to notify the Fragment that an item has been clicked, and then send the property details to the fragment
+        // Listeners to notify the Fragment that an item has been clicked, and then send the recipe details to the fragment
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

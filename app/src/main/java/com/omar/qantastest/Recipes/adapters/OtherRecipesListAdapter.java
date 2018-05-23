@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class OtherRecipesListAdapter extends RecyclerView.Adapter<OtherRecipesListAdapter.OtherRecipeViewHolder> {
 
-    // The Recycler Adapter class for the properties list recycler view
+    // The Recycler Adapter class for the recipes list recycler view
     private Context mContext;
     private List<Recipe> recipesList;
     private OtherRecipesListAdapter.OtherRecipesListListener listener;

@@ -69,6 +69,7 @@ public class RecipesListFragment extends BaseFragment
 
         recipesManager = new RecipesManager();
 
+        // We split the two lists to display them in different sections
         popularRecipesList = new ArrayList<>();
         popularRecipesAdapter = new PopularRecipesListAdapter(getActivity(), popularRecipesList, this);
         recyclerViewPopularRecipes.setItemAnimator(new DefaultItemAnimator());
@@ -90,6 +91,9 @@ public class RecipesListFragment extends BaseFragment
     @Override
     public void onResume() {
         super.onResume();
+
+        // A config boolean has been defined which determines which orientation the phone is in
+        // Based on the orientation, we apply the span counts to the GridLayoutManagers of the recycler views
         int spanCount = 2;
         if (getActivity().getResources().getBoolean(R.bool.landscapeMode)) {
             spanCount = 3;
@@ -119,7 +123,7 @@ public class RecipesListFragment extends BaseFragment
     }
 
     public void searchRecipes() {
-        // Make the API call (retrofit and rxjava)
+        // Make the API call (Retrofit and RxJava)
         recipesManager.searchRecipes()
                 .subscribe(getRecipesSubscriber());
         progressBar.setVisibility(View.VISIBLE);

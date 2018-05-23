@@ -1,16 +1,13 @@
 package com.omar.qantastest.Recipes.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,20 +57,16 @@ public class RecipeDetailsFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_recipes_details, container, false);
         ButterKnife.bind(this, view);
 
-        /*
-            Even though transferring data into this fragment via Bundle has not been set up yet inside the activity,
-            we can use the code below to send the property data to the fragment to display when it is first loaded.
-
-         */
-        Bundle b = getArguments();
-        if (b != null) {
-            recipeData = (Recipe) b.getSerializable("recipe");
+        // Get the data through the bundle
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            recipeData = (Recipe) bundle.getSerializable("recipe");
         }
 
         /*
             We check for the saved data in the onCreate function which is called before onCreateView and assign the data to a global
             recipeData object. So if it is null, it means no item has been clicked yet. If it has been clicked, simply use that data
-            to update the view. Once again, saving data on orientation changed
+            to update the view. Saving data on orientation changed
          */
         if (recipeData == null) {
             title.setText("");
@@ -129,6 +122,7 @@ public class RecipeDetailsFragment extends BaseFragment {
     }
 
     private void initLinkSpan() {
+        // Take the link text in the TextView and attach a clickable span on it to open our in app web view
         if (link != null) {
             String fullText = link.getText().toString();
             String linkText = recipeData.getHref();
@@ -154,6 +148,7 @@ public class RecipeDetailsFragment extends BaseFragment {
         }
     }
 
+    // Notify the activity that the link span was clicked
     public interface RecipeDetailsFragmentListener {
         void openUrl(String url);
     }

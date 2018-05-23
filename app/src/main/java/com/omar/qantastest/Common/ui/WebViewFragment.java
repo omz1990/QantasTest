@@ -24,8 +24,11 @@ public class WebViewFragment extends BaseFragment {
     @BindView(R.id.webView) protected WebView webView;
     @BindView(R.id.progressBar) protected ProgressBar progressBar;
 
-
     String url;
+
+    /**
+    * This class has intentionally been kept separate in the Common package as it can be used for any other purpose
+     */
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,7 +39,7 @@ public class WebViewFragment extends BaseFragment {
 
         // Repopulate previously loaded data to handle not losing data on screen orientation if there is any available
         if (savedInstanceState != null) {
-            repopulateData( savedInstanceState.getString("url"));
+            repopulateData(savedInstanceState.getString("url"));
         }
     }
 
@@ -45,14 +48,9 @@ public class WebViewFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_web_view, container, false);
         ButterKnife.bind(this, view);
 
-        /*
-            Even though transferring data into this fragment via Bundle has not been set up yet inside the activity,
-            we can use the code below to send the property data to the fragment to display when it is first loaded.
-
-         */
-        Bundle b = getArguments();
-        if (b != null) {
-            url = b.getString("url");
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            url = bundle.getString("url");
         }
 
         setupWebView();
@@ -71,11 +69,13 @@ public class WebViewFragment extends BaseFragment {
 
     private void setupWebView() {
 
+        // Set the required properties for our webview
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setBuiltInZoomControls(true);
         settings.setSupportZoom(false);
         settings.setDisplayZoomControls(false);
+
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {

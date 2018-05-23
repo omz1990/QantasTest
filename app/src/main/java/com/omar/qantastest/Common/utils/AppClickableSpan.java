@@ -9,6 +9,7 @@ import android.view.View;
  */
 public class AppClickableSpan extends ClickableSpan {
 
+    // This util class is used to set span inside a TextView
     private final int color;
 
     public AppClickableSpan(int color) {
