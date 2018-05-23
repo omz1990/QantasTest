@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.omar.qantastest.Common.network.domain.models.Recipe;
 import com.omar.qantastest.Common.network.domain.models.RecipeResponse;
@@ -18,6 +19,7 @@ import com.omar.qantastest.R;
 import com.omar.qantastest.Recipes.adapters.OtherRecipesListAdapter;
 import com.omar.qantastest.Recipes.adapters.PopularRecipesListAdapter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +41,8 @@ public class RecipesListFragment extends BaseFragment
     private OtherRecipesListAdapter otherRecipesListAdapter;
     private List<Recipe> otherRecipesList;
 
+    @BindView(R.id.progressBar) protected ProgressBar progressBar;
+
     private RecipesManager recipesManager;
     private RecipesListFragmentListener listener;
 
@@ -47,6 +51,14 @@ public class RecipesListFragment extends BaseFragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Keep data saved while screen orientation changes
+        setRetainInstance(true);
+
+        // Repopulate previously loaded data to handle not losing data on screen orientation if there is any available
+        if (savedInstanceState != null) {
+            repopulateValues(savedInstanceState);
+        }
 
     }
 
@@ -66,7 +78,11 @@ public class RecipesListFragment extends BaseFragment
         otherRecipesListAdapter = new OtherRecipesListAdapter(getActivity(), otherRecipesList, this);
         recyclerViewOtherRecipes.setAdapter(otherRecipesListAdapter);
 
-        searchRecipes();
+        if (responseData == null) {
+            searchRecipes();
+        } else {
+            updateLists();
+        }
 
         return view;
     }
@@ -106,6 +122,7 @@ public class RecipesListFragment extends BaseFragment
         // Make the API call (retrofit and rxjava)
         recipesManager.searchRecipes()
                 .subscribe(getRecipesSubscriber());
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     private DisposableObserver<RecipeResponse> getRecipesSubscriber() {
@@ -117,10 +134,12 @@ public class RecipesListFragment extends BaseFragment
 
             @Override
             public void onError(Throwable e) {
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onNext(RecipeResponse response) {
+                progressBar.setVisibility(View.GONE);
                 responseData = response;
                 updateLists();
             }
@@ -140,6 +159,17 @@ public class RecipesListFragment extends BaseFragment
         }
         popularRecipesAdapter.notifyDataSetChanged();
         otherRecipesListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save currently loaded data into the bundle for reloading
+        savedInstanceState.putSerializable("responseData", (Serializable) responseData);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    private void repopulateValues(Bundle bundle) {
+        responseData = (RecipeResponse) bundle.getSerializable("responseData");
     }
 
     @Override

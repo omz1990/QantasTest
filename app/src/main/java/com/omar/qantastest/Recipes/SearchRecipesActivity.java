@@ -46,6 +46,8 @@ public class SearchRecipesActivity extends BaseActivity implements RecipesListFr
         if (recipesListFragment == null) {
             recipesListFragment = new RecipesListFragment();
             fragmentTransaction.add(R.id.fragmentContainer, recipesListFragment, TAG_RECIPES_LIST);
+        } else {
+            fragmentTransaction.replace(R.id.fragmentContainer, recipesListFragment, TAG_RECIPES_LIST);
         }
 
         fragmentTransaction.commitAllowingStateLoss();
