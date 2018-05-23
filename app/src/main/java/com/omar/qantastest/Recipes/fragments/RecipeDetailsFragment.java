@@ -1,5 +1,6 @@
 package com.omar.qantastest.Recipes.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -38,6 +39,8 @@ public class RecipeDetailsFragment extends BaseFragment {
     @BindView(R.id.link) protected TextView link;
 
     Recipe recipeData;
+
+    private RecipeDetailsFragmentListener listener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,6 +83,24 @@ public class RecipeDetailsFragment extends BaseFragment {
         return view;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        // Initialize the listener
+        if (context instanceof RecipeDetailsFragment.RecipeDetailsFragmentListener) {
+            listener = (RecipeDetailsFragment.RecipeDetailsFragmentListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement RecipeDetailsFragmentListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        listener = null;
+    }
+
     public void repopulateData(Recipe recipeData) {
         this.recipeData = recipeData;
         displayData();
@@ -116,7 +137,7 @@ public class RecipeDetailsFragment extends BaseFragment {
             AppClickableSpan termsOfServiceSpan = new AppClickableSpan(color) {
                 @Override
                 public void onClick(View v) {
-                    openWebView(recipeData.getHref());
+                    listener.openUrl(recipeData.getHref());
 
                 }
                 @Override
@@ -133,9 +154,7 @@ public class RecipeDetailsFragment extends BaseFragment {
         }
     }
 
-    private void openWebView(String url) {
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(url));
-        startActivity(i);
+    public interface RecipeDetailsFragmentListener {
+        void openUrl(String url);
     }
 }

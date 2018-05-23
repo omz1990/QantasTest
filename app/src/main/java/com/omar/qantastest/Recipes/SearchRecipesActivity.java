@@ -17,9 +17,8 @@ import butterknife.ButterKnife;
 /**
  * Created by omz on 23/5/18
  */
-public class SearchRecipesActivity extends BaseActivity implements RecipesListFragment.RecipesListFragmentListener {
-
-    private enum RecipeCurrentScreen { LIST, DETAILS, WEB }
+public class SearchRecipesActivity extends BaseActivity
+        implements RecipesListFragment.RecipesListFragmentListener, RecipeDetailsFragment.RecipeDetailsFragmentListener {
 
     FragmentManager fragmentManager;
 
@@ -32,7 +31,6 @@ public class SearchRecipesActivity extends BaseActivity implements RecipesListFr
     private WebViewFragment webViewFragment;
     private String TAG_RECIPE_WEB = "rWeb";
 
-    private RecipeCurrentScreen screenState = RecipeCurrentScreen.LIST;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +55,9 @@ public class SearchRecipesActivity extends BaseActivity implements RecipesListFr
         recipeDetailsFragment = (RecipeDetailsFragment) fragmentManager.findFragmentByTag(TAG_RECIPE_DETAILS);
         webViewFragment = (WebViewFragment) fragmentManager.findFragmentByTag(TAG_RECIPE_WEB);
 
-        if (recipeDetailsFragment != null) {
+        if (webViewFragment != null) {
+            fragmentTransaction.replace(R.id.fragmentContainer, webViewFragment, TAG_RECIPE_WEB);
+        } else if (recipeDetailsFragment != null) {
             fragmentTransaction.replace(R.id.fragmentContainer, recipeDetailsFragment, TAG_RECIPE_DETAILS);
         } else {
             if (recipesListFragment == null) {
@@ -73,8 +73,6 @@ public class SearchRecipesActivity extends BaseActivity implements RecipesListFr
 
     @Override
     public void recipeClicked(Recipe recipe) {
-        screenState = RecipeCurrentScreen.DETAILS;
-
         if (recipeDetailsFragment == null) {
             recipeDetailsFragment = new RecipeDetailsFragment();
         }
@@ -84,6 +82,21 @@ public class SearchRecipesActivity extends BaseActivity implements RecipesListFr
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
         ft.replace(R.id.fragmentContainer, recipeDetailsFragment, TAG_RECIPE_DETAILS);
+        ft.addToBackStack(null);
+        ft.commitAllowingStateLoss();
+    }
+
+    @Override
+    public void openUrl(String url) {
+        if (webViewFragment == null) {
+            webViewFragment = new WebViewFragment();
+        }
+        Bundle bundle = new Bundle();
+        bundle.putString("url", url);
+        webViewFragment.setArguments(bundle);
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
+        ft.replace(R.id.fragmentContainer, webViewFragment, TAG_RECIPE_WEB);
         ft.addToBackStack(null);
         ft.commitAllowingStateLoss();
     }
