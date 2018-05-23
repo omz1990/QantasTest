@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import com.omar.qantastest.Common.network.domain.models.Recipe;
 import com.omar.qantastest.Common.ui.BaseActivity;
+import com.omar.qantastest.Common.ui.WebViewFragment;
 import com.omar.qantastest.R;
 import com.omar.qantastest.Recipes.fragments.RecipeDetailsFragment;
 import com.omar.qantastest.Recipes.fragments.RecipesListFragment;
@@ -18,12 +19,20 @@ import butterknife.ButterKnife;
  */
 public class SearchRecipesActivity extends BaseActivity implements RecipesListFragment.RecipesListFragmentListener {
 
+    private enum RecipeCurrentScreen { LIST, DETAILS, WEB }
+
     FragmentManager fragmentManager;
 
     private String TAG_RECIPES_LIST = "rList";
     private RecipesListFragment recipesListFragment;
+
     private String TAG_RECIPE_DETAILS = "rDetails";
     private RecipeDetailsFragment recipeDetailsFragment;
+
+    private WebViewFragment webViewFragment;
+    private String TAG_RECIPE_WEB = "rWeb";
+
+    private RecipeCurrentScreen screenState = RecipeCurrentScreen.LIST;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +54,18 @@ public class SearchRecipesActivity extends BaseActivity implements RecipesListFr
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         recipesListFragment = (RecipesListFragment) fragmentManager.findFragmentByTag(TAG_RECIPES_LIST);
+        recipeDetailsFragment = (RecipeDetailsFragment) fragmentManager.findFragmentByTag(TAG_RECIPE_DETAILS);
+        webViewFragment = (WebViewFragment) fragmentManager.findFragmentByTag(TAG_RECIPE_WEB);
 
-        if (recipesListFragment == null) {
-            recipesListFragment = new RecipesListFragment();
-            fragmentTransaction.add(R.id.fragmentContainer, recipesListFragment, TAG_RECIPES_LIST);
+        if (recipeDetailsFragment != null) {
+            fragmentTransaction.replace(R.id.fragmentContainer, recipeDetailsFragment, TAG_RECIPE_DETAILS);
         } else {
-            fragmentTransaction.replace(R.id.fragmentContainer, recipesListFragment, TAG_RECIPES_LIST);
+            if (recipesListFragment == null) {
+                recipesListFragment = new RecipesListFragment();
+                fragmentTransaction.add(R.id.fragmentContainer, recipesListFragment, TAG_RECIPES_LIST);
+            } else {
+                fragmentTransaction.replace(R.id.fragmentContainer, recipesListFragment, TAG_RECIPES_LIST);
+            }
         }
 
         fragmentTransaction.commitAllowingStateLoss();
@@ -58,6 +73,8 @@ public class SearchRecipesActivity extends BaseActivity implements RecipesListFr
 
     @Override
     public void recipeClicked(Recipe recipe) {
+        screenState = RecipeCurrentScreen.DETAILS;
+
         if (recipeDetailsFragment == null) {
             recipeDetailsFragment = new RecipeDetailsFragment();
         }
@@ -65,6 +82,7 @@ public class SearchRecipesActivity extends BaseActivity implements RecipesListFr
         bundle.putSerializable("recipe", recipe);
         recipeDetailsFragment.setArguments(bundle);
         FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
         ft.replace(R.id.fragmentContainer, recipeDetailsFragment, TAG_RECIPE_DETAILS);
         ft.addToBackStack(null);
         ft.commitAllowingStateLoss();

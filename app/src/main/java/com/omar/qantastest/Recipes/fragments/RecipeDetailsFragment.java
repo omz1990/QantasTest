@@ -78,6 +78,7 @@ public class RecipeDetailsFragment extends BaseFragment {
 
     private void displayData() {
         title.setText(recipeData.getTitle());
+        ingredients.setText(recipeData.getIngredients());
         if (!recipeData.getThumbnail().isEmpty()) {
             Glide.with(getActivity())
                     .load(recipeData.getThumbnail())
