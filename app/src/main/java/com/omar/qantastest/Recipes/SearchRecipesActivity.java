@@ -8,6 +8,7 @@ import android.os.Bundle;
 import com.omar.qantastest.Common.network.domain.models.Recipe;
 import com.omar.qantastest.Common.ui.BaseActivity;
 import com.omar.qantastest.R;
+import com.omar.qantastest.Recipes.fragments.RecipeDetailsFragment;
 import com.omar.qantastest.Recipes.fragments.RecipesListFragment;
 
 import butterknife.ButterKnife;
@@ -21,6 +22,8 @@ public class SearchRecipesActivity extends BaseActivity implements RecipesListFr
 
     private String TAG_RECIPES_LIST = "rList";
     private RecipesListFragment recipesListFragment;
+    private String TAG_RECIPE_DETAILS = "rDetails";
+    private RecipeDetailsFragment recipeDetailsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +58,15 @@ public class SearchRecipesActivity extends BaseActivity implements RecipesListFr
 
     @Override
     public void recipeClicked(Recipe recipe) {
-
+        if (recipeDetailsFragment == null) {
+            recipeDetailsFragment = new RecipeDetailsFragment();
+        }
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("recipe", recipe);
+        recipeDetailsFragment.setArguments(bundle);
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.replace(R.id.fragmentContainer, recipeDetailsFragment, TAG_RECIPE_DETAILS);
+        ft.addToBackStack(null);
+        ft.commitAllowingStateLoss();
     }
 }
